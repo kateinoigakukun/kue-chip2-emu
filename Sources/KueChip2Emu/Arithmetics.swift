@@ -66,15 +66,15 @@ enum BinaryOperation {
     case cmp
 
     func compute(base: Int8, value: Int8, flag: inout Flag) -> Int8 {
-        let rawCF: UInt16 = flag.cf ? 1 : 0
-        let unsignedBase = UInt16(UInt8(bitPattern: base))
-        let unsignedValue = UInt16(UInt8(bitPattern: value))
+        let rawCF: Int16 = flag.cf ? 1 : 0
+        let unsignedBase = Int16(UInt8(bitPattern: base))
+        let unsignedValue = Int16(UInt8(bitPattern: value))
         let result: Int8
         defer {
             flag.zf = result == 0
             flag.nf = result < 0
         }
-        let largeResult: UInt16
+        let largeResult: Int16
         var isOverflow: Bool {
             let signedResult = Int8(bitPattern: UInt8(largeResult & 0xFF))
             return ((base > 0) && (value > 0) && signedResult < 0) ||

@@ -131,9 +131,38 @@ final class KueChip2EmuTests: XCTestCase {
         }
         XCTAssertEqual(ledBits, [1, 2, 4, 8, 16, 32, 64, 128, 1])
     }
-
-    func testStore() throws {
-        let bytes: [UInt8] = [0x6a, 0x80, 0x62, 0x01, 0x77, 0x00, 0x0f]
+    
+    func testPrime() throws {
+        // ENTRY:
+        //     LD  ACC, 1
+        //     ST  ACC, (1h)
+        //
+        // BASE_LOOP:
+        //     ADD ACC, 1
+        //     CMP ACC, 010h
+        //     BZ  END_OF_PRIME
+        //
+        //     LD  IX, ACC
+        //     LD  IX, (IX + 0h)
+        //     CMP IX, 0h
+        //     BNZ BASE_LOOP
+        //
+        //     LD  IX, ACC
+        //     SUB IX, 080h
+        //
+        // MARK_LOOP:
+        //     ADD IX, ACC
+        //     BVF BASE_LOOP
+        //
+        //     ST  ACC, (IX + 080h)
+        //     BA  MARK_LOOP
+        //     HLT
+        let bytes: [UInt8] = [
+            0x62, 0x01, 0x75, 0x01, 0xb2, 0x01, 0xf2, 0x10,
+            0x39, 0x1b, 0x68, 0x6f, 0x00, 0xfa, 0x00, 0x31,
+            0x04, 0x68, 0xaa, 0x80, 0xb8, 0x38, 0x04, 0x77,
+            0x80, 0x30, 0x14, 0x0f
+        ]
         let flag = Flag(rawValue: 0)
         let memory = Memory(text: bytes, data: [])
         let obuf = BufferState(value: 0, flag: false)
@@ -143,7 +172,18 @@ final class KueChip2EmuTests: XCTestCase {
             phase: .p0, memory: memory, obuf: obuf, ibuf: ibuf
         )
         var vm = KueChip2(state: state)
-        while try vm.iteratePhase() != .halt {}
-        XCTAssertEqual(vm.state.memory[data: 0x80], 1)
+        var storeCount = 0
+        var writeCountMap: [UInt8: UInt8] = [:]
+        while try vm.iteratePhase() != .halt {
+            if case .store = vm.state.ir, vm.state.phase == .p4 {
+                storeCount += 1
+                writeCountMap[vm.state.acc, default: 0] += 1
+            }
+        }
+        let data = vm.state.memory.data
+        let primes = data[(data.startIndex + 1)...].filter( { $0 == 0 })
+        XCTAssertEqual(primes.count, 54)
+
+        print("ST instruction was executed: \(storeCount) times")
     }
 }

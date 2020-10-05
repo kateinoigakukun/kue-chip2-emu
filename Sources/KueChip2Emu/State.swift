@@ -23,8 +23,8 @@ struct Flag {
 }
 
 struct Memory {
-    static let programSpace = 0xFF
-    static let dataSpace = 0xFF
+    static let programSpace = 0x100
+    static let dataSpace = 0x100
     typealias Address = UInt8
     typealias Buffer = [UInt8]
     private var buffer: Buffer
@@ -51,6 +51,10 @@ struct Memory {
         set {
             buffer[Self.programSpace + Buffer.Index(address)] = newValue
         }
+    }
+
+    var data: ArraySlice<UInt8> {
+        buffer[Self.programSpace..<buffer.endIndex]
     }
 }
 

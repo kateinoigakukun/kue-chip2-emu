@@ -91,7 +91,12 @@ struct KueChip2 {
             case .absoluteText, .absoluteData:
                 state.mar = state.memory[text: state.mar]
             case .relativeText, .relativeData:
-                state.mar = state.ix + state.memory[text: state.mar]
+                state.mar = UInt8(
+                    UInt16(
+                        Int16(Int8(bitPattern: state.ix)) +
+                            Int16(state.memory[text: state.mar])
+                    ) & 0xff
+                )
             }
         case let (.p4, .load(reg, addressMode)):
             switch addressMode {
@@ -110,7 +115,12 @@ struct KueChip2 {
             case .absoluteText, .absoluteData:
                 state.mar = state.memory[text: state.mar]
             case .relativeText, .relativeData:
-                state.mar = state.ix + state.memory[text: state.mar]
+                state.mar = UInt8(
+                    UInt16(
+                        Int16(Int8(bitPattern: state.ix)) +
+                            Int16(state.memory[text: state.mar])
+                    ) & 0xff
+                )
             }
         case let (.p4, .store(reg, addressMode)):
             switch addressMode {
@@ -184,12 +194,14 @@ struct KueChip2 {
             let result = operation.compute(
                 base: Int8(bitPattern: base), value: Int8(bitPattern: value), flag: &state.flag
             )
+            if case .cmp = operation { return }
             state[register: register] = UInt8(bitPattern: result)
         case .ix:
             let value = state[register: .ix]
             let result = operation.compute(
                 base: Int8(bitPattern: base), value: Int8(bitPattern: value), flag: &state.flag
             )
+            if case .cmp = operation { return }
             state[register: register] = UInt8(bitPattern: result)
         case .immediate,
              .absoluteText, .absoluteData,
@@ -210,11 +222,17 @@ struct KueChip2 {
             let result = operation.compute(
                 base: Int8(bitPattern: base), value: Int8(bitPattern: value), flag: &state.flag
             )
+            if case .cmp = operation { return }
             state[register: register] = UInt8(bitPattern: result)
         case .absoluteText, .absoluteData:
             state.mar = state.memory[text: state.mar]
         case .relativeText, .relativeData:
-            state.mar = state.ix + state.memory[text: state.mar]
+            state.mar = UInt8(
+                UInt16(
+                    Int16(Int8(bitPattern: state.ix)) +
+                        Int16(state.memory[text: state.mar])
+                ) & 0xff
+            )
         }
     }
 
@@ -229,12 +247,14 @@ struct KueChip2 {
             let result = operation.compute(
                 base: Int8(bitPattern: base), value: Int8(bitPattern: value), flag: &state.flag
             )
+            if case .cmp = operation { return }
             state[register: register] = UInt8(bitPattern: result)
         case .absoluteData, .relativeData:
             let value = state.memory[text: state.mar]
             let result = operation.compute(
                 base: Int8(bitPattern: base), value: Int8(bitPattern: value), flag: &state.flag
             )
+            if case .cmp = operation { return }
             state[register: register] = UInt8(bitPattern: result)
         }
     }

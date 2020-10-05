@@ -173,11 +173,11 @@ final class KueChip2EmuTests: XCTestCase {
         )
         var vm = KueChip2(state: state)
         var storeCount = 0
-        var writeCountMap: [UInt8: UInt8] = [:]
+        var storeCountMap: [UInt8: UInt8] = [:]
         while try vm.iteratePhase() != .halt {
             if case .store = vm.state.ir, vm.state.phase == .p4 {
                 storeCount += 1
-                writeCountMap[vm.state.acc, default: 0] += 1
+                storeCountMap[vm.state.acc, default: 0] += 1
             }
         }
         let data = vm.state.memory.data

@@ -54,7 +54,7 @@ struct Memory {
     }
 
     var data: ArraySlice<UInt8> {
-        buffer[Self.programSpace..<buffer.endIndex]
+        buffer[Self.programSpace ..< buffer.endIndex]
     }
 }
 

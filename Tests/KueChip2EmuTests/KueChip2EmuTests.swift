@@ -131,7 +131,7 @@ final class KueChip2EmuTests: XCTestCase {
         }
         XCTAssertEqual(ledBits, [1, 2, 4, 8, 16, 32, 64, 128, 1])
     }
-    
+
     func testPrime() throws {
         // ENTRY:
         //     LD  ACC, 1
@@ -158,10 +158,10 @@ final class KueChip2EmuTests: XCTestCase {
         //     BA  MARK_LOOP
         //     HLT
         let bytes: [UInt8] = [
-            0x62, 0x01, 0x75, 0x01, 0xb2, 0x01, 0xf2, 0x10,
-            0x39, 0x1b, 0x68, 0x6f, 0x00, 0xfa, 0x00, 0x31,
-            0x04, 0x68, 0xaa, 0x80, 0xb8, 0x38, 0x04, 0x77,
-            0x80, 0x30, 0x14, 0x0f
+            0x62, 0x01, 0x75, 0x01, 0xB2, 0x01, 0xF2, 0x10,
+            0x39, 0x1B, 0x68, 0x6F, 0x00, 0xFA, 0x00, 0x31,
+            0x04, 0x68, 0xAA, 0x80, 0xB8, 0x38, 0x04, 0x77,
+            0x80, 0x30, 0x14, 0x0F,
         ]
         let flag = Flag(rawValue: 0)
         let memory = Memory(text: bytes, data: [])
@@ -181,7 +181,7 @@ final class KueChip2EmuTests: XCTestCase {
             }
         }
         let data = vm.state.memory.data
-        let primes = data[(data.startIndex + 1)...].filter( { $0 == 0 })
+        let primes = data[(data.startIndex + 1)...].filter { $0 == 0 }
         XCTAssertEqual(primes.count, 54)
 
         print("ST instruction was executed: \(storeCount) times")

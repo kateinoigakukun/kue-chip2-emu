@@ -95,7 +95,7 @@ struct KueChip2 {
                     UInt16(
                         Int16(Int8(bitPattern: state.ix)) +
                             Int16(state.memory[text: state.mar])
-                    ) & 0xff
+                    ) & 0xFF
                 )
             }
         case let (.p4, .load(reg, addressMode)):
@@ -119,7 +119,7 @@ struct KueChip2 {
                     UInt16(
                         Int16(Int8(bitPattern: state.ix)) +
                             Int16(state.memory[text: state.mar])
-                    ) & 0xff
+                    ) & 0xFF
                 )
             }
         case let (.p4, .store(reg, addressMode)):
@@ -231,7 +231,7 @@ struct KueChip2 {
                 UInt16(
                     Int16(Int8(bitPattern: state.ix)) +
                         Int16(state.memory[text: state.mar])
-                ) & 0xff
+                ) & 0xFF
             )
         }
     }
